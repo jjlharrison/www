@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Emoji Stopwatch App</title>
+    <link rel="manifest" href="manifest.json" />
+    <link rel="apple-touch-icon" sizes="57x57" href="/ios/57.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/ios/114.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/ios/72.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/ios/144.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/ios/60.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/ios/120.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/ios/76.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/ios/152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/ios/180.png">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #start-button {
+            font-size: 15vw;
+            padding: 2vw 8vw;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #split-screen {
+            display: none;
+            width: 100%;
+            height: calc(100% - 50px); /* Leave space for toolbar */
+        }
+
+        .half {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            border: 2px solid #ccc;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .title {
+            font-size: 5vw;
+            font-weight: bold;
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .emoji {
+            font-size: 20vw;
+            cursor: pointer;
+            flex: 2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .emoji img {
+            max-width: 50%;
+            max-height: 100%;
+            object-fit: contain;
+            cursor: pointer;
+        }
+
+        .stopwatch {
+            font-size: 3vw;
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .undo-button {
+            padding: 5px 10px;
+            font-size: 1em;
+            cursor: pointer;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+        }
+
+        #toolbar {
+            width: 100%;
+            height: 50px;
+            color: white;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #toolbar button {
+            font-size: 1em;
+            padding: 5px 10px;
+        }
+
+        .running #start-button {
+            display: none;
+        }
+
+        .running #split-screen, .running #toolbar {
+            display: flex;
+        }
+    </style>
+</head>
+<body>
+
+<button id="start-button">Start</button>
+
+<div id="split-screen">
+    <div id="left-half" class="half">
+        <div class="title">Joshua</div>
+        <div class="emoji" id="left-emoji"></div>
+        <div class="stopwatch" id="left-timer">0:00</div>
+        <button class="undo-button" id="left-undo">Undo</button>
+    </div>
+    <div id="right-half" class="half">
+        <div class="title">Lottie</div>
+        <div class="emoji" id="right-emoji"></div>
+        <div class="stopwatch" id="right-timer">0:00</div>
+        <button class="undo-button" id="right-undo">Undo</button>
+    </div>
+</div>
+
+<div id="toolbar">
+    <button id="stop-button">Stop</button>
+    <button id="refresh-button">Refresh</button>
+</div>
+
+<script>
+    let emojis;
+    let leftIndex = 0;
+    let rightIndex = 0;
+    let startTime;
+    let timerInterval;
+
+    const emojiImages = {
+        '👕': 'tshirt',
+        '🚰': 'water',
+        '🚽': 'toilet',
+        '🛏️': 'bed',
+        '🪥': 'toothbrush',
+        '🧹': 'broom',
+        '🧺': 'basket',
+        '🩳': 'pyjamas',
+        '✅': 'check-mark',
+        '🐝': 'bee'
+    };
+
+    const startButton = document.getElementById('start-button');
+    const splitScreen = document.getElementById('split-screen');
+    const leftEmoji = document.getElementById('left-emoji');
+    const rightEmoji = document.getElementById('right-emoji');
+    const leftTimer = document.getElementById('left-timer');
+    const rightTimer = document.getElementById('right-timer');
+    const leftUndo = document.getElementById('left-undo');
+    const rightUndo = document.getElementById('right-undo');
+    const stopButton = document.getElementById('stop-button');
+    const refreshButton = document.getElementById('refresh-button');
+
+    function saveState() {
+        const state = {
+            leftIndex,
+            rightIndex,
+            startTime,
+            savedAt: Date.now()
+        };
+        localStorage.setItem('emojiStopwatchState', JSON.stringify(state));
+    }
+
+    function loadState() {
+        const state = JSON.parse(localStorage.getItem('emojiStopwatchState'));
+        if (state) {
+            const now = Date.now();
+            if (now - state.savedAt < 3600000) { // 1 hour
+                leftIndex = state.leftIndex;
+                rightIndex = state.rightIndex;
+                startTime = state.startTime;
+                start();
+            } else {
+                localStorage.removeItem('emojiStopwatchState');
+            }
+        }
+    }
+
+    function start() {
+        const morning = new Date().getHours() < 12;
+        emojis = morning ? ['🚽', '👕', '🧺', '🛏️', '🪥', '🧹'] : ['🚽', '🩳', '🧺', '🪥', '🚰', '👕'];
+        labels = morning ? ['Toilet', 'Get Dressed', 'Dirty Clothes in Basket', 'Make Bed', 'Brush Teeth', 'Tidy Bedroom'] : ['Toilet', 'Pyjamas', 'Dirty Clothes in Basket', 'Brush Teeth', 'Water Bottle', 'Clothes for Tomorrow'];
+        updateTimers();
+        timerInterval = setInterval(updateTimers, 1000);
+        updateEmoji(leftEmoji, leftIndex);
+        updateEmoji(rightEmoji, rightIndex);
+        document.body.classList.add('running');
+    }
+
+    function reset() {
+        const now = new Date(Date.now());
+        const startHour = now.getHours();
+        const startMinute = now.getMinutes();
+        leftIndex = 0;
+        rightIndex = 0;
+        if (startHour < 7 || (startHour === 7 && startMinute < 15)) {
+            now.setHours(6, 45, 0, 0);
+        } else if (startHour === 7 && startMinute < 30) {
+            now.setHours(7, 0, 0, 0);
+        }
+        startTime = now.getTime();
+        saveState();
+    }
+
+    function init() {
+        reset();
+        start();
+    }
+
+    function stop() {
+        clearInterval(timerInterval);
+        document.body.classList.remove('running');
+        localStorage.removeItem('emojiStopwatchState');
+        reset();
+    }
+
+    function emojiImage(e) {
+        return '<img src="' + emojiImages[e] + '.png" />';
+    }
+
+    function updateTimers() {
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        const minutes = Math.floor(elapsed / 60);
+        const seconds = elapsed % 60;
+        const formattedTime = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        if (leftIndex < emojis.length) leftTimer.textContent = formattedTime;
+        if (rightIndex < emojis.length) rightTimer.textContent = formattedTime;
+        saveState();
+    }
+
+    function updateEmoji(element, index) {
+        element.textContent = emojis[index] || "✅";
+        element.title = labels[index] || "Done";
+        element.innerHTML = emojis[index] ? emojiImage(emojis[index]) : emojiImage('✅');
+    }
+
+    function handleEmojiClick(index, emojiElement) {
+        if (index < emojis.length - 1) {
+            index++;
+            updateEmoji(emojiElement, index);
+        } else {
+            const minutes = Math.floor(Math.floor((Date.now() - startTime) / 1000) / 60);
+            const bee = emojiImage('🐝')
+            emojiElement.innerHTML = minutes < 20 ? bee + bee : minutes < 30 ? bee : emojiImage('✅');
+            index = emojis.length;
+        }
+        return index;
+    }
+
+    leftEmoji.addEventListener('click', () => leftIndex = handleEmojiClick(leftIndex, leftEmoji));
+    rightEmoji.addEventListener('click', () => rightIndex = handleEmojiClick(rightIndex, rightEmoji));
+
+    leftUndo.addEventListener('click', () => {
+        if (leftIndex > 0) {
+            leftIndex--;
+            updateEmoji(leftEmoji, leftIndex);
+        }
+    });
+
+    rightUndo.addEventListener('click', () => {
+        if (rightIndex > 0) {
+            rightIndex--;
+            updateEmoji(rightEmoji, rightIndex);
+        }
+    });
+
+    startButton.addEventListener('click', init);
+    stopButton.addEventListener('click', stop);
+    refreshButton.addEventListener('click', () => window.location.reload())
+
+    window.addEventListener('load', () => {
+        loadState();
+        if (startTime) {
+            start();
+        }
+    });
+</script>
+</body>
+</html>
