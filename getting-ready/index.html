@@ -218,7 +218,10 @@
         const startMinute = now.getMinutes();
         leftIndex = 0;
         rightIndex = 0;
-        if (startHour < 7 || (startHour === 7 && startMinute < 15)) {
+        if (now.getDay() === 0 || now.getDay() === 6) {
+            // Start now
+        }
+        else if (startHour < 7 || (startHour === 7 && startMinute < 15)) {
             now.setHours(6, 45, 0, 0);
         } else if (startHour === 7 && startMinute < 30) {
             now.setHours(7, 0, 0, 0);
