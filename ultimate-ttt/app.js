@@ -130,37 +130,40 @@ class UltimateTicTacToe extends HTMLElement {
   }
   
   render() {
-    // Render a square 3x3 grid of tic tac toe boards that is centered with a white margin.
+    // Render a square board with two rows: a status row above the grid.
     this.shadowRoot.innerHTML = `
       <style>
         :host {
           display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          grid-template-rows: repeat(3, 1fr);
+          grid-template-rows: auto 1fr;
           width: 90vmin;
           height: 90vmin;
           margin: 5vmin auto;
           background: white;
           border: 5px solid white;
           font-family: sans-serif;
-          position: relative;
         }
         .status {
-          position: absolute;
-          top: 10px;
-          left: 50%;
-          transform: translateX(-50%);
+          text-align: center;
           font-size: 1.5em;
           background: white;
           padding: 5px 10px;
           border: 1px solid black;
-          z-index: 10;
+        }
+        .grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          grid-template-rows: repeat(3, 1fr);
+          width: 100%;
+          height: 100%;
         }
       </style>
       <div class="status">Current Player: ${this.currentPlayer === 'X' ? '⨯' : '⚪︎'}</div>
-      ${this.boards.map((board, i) => `
-        <tic-tac-toe-board board-index="${i}"></tic-tac-toe-board>
-      `).join('')}
+      <div class="grid">
+        ${this.boards.map((board, i) => `
+          <tic-tac-toe-board board-index="${i}"></tic-tac-toe-board>
+        `).join('')}
+      </div>
     `;
     this.updateBoards();
   }
