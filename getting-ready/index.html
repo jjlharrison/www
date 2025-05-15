@@ -101,10 +101,25 @@
         #toolbar {
             width: 100%;
             height: 50px;
-            color: white;
             display: none;
-            justify-content: center;
             align-items: center;
+            padding: 0 15px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        #toolbar p {
+            text-align: left;
+            margin: 0;
+            position: absolute;
+            left: 15px;
+        }
+
+        #toolbar .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
         }
 
         #toolbar button {
@@ -130,21 +145,22 @@
         <div class="title">Joshua</div>
         <div class="emoji" id="left-emoji"></div>
         <div class="stopwatch" id="left-timer">0:00</div>
-        <p>15m = 🐝🐝, 20m = 🐝</p>
         <button class="undo-button" id="left-undo">Undo</button>
     </div>
     <div id="right-half" class="half">
         <div class="title">Lottie</div>
         <div class="emoji" id="right-emoji"></div>
         <div class="stopwatch" id="right-timer">0:00</div>
-        <p>15m = 🐝🐝, 20m = 🐝</p>
         <button class="undo-button" id="right-undo">Undo</button>
     </div>
 </div>
 
 <div id="toolbar">
-    <button id="stop-button">Stop</button>
-    <button id="refresh-button">Refresh</button>
+    <p><15m = 🐝🐝, 15m-20m = 🐝, >20m = 😠</p>
+    <div class="button-group">
+        <button id="stop-button">Stop</button>
+        <button id="refresh-button">Refresh</button>
+    </div>
 </div>
 
 <script>
