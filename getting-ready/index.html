@@ -130,12 +130,14 @@
         <div class="title">Joshua</div>
         <div class="emoji" id="left-emoji"></div>
         <div class="stopwatch" id="left-timer">0:00</div>
+        <p>15m = 🐝🐝, 20m = 🐝</p>
         <button class="undo-button" id="left-undo">Undo</button>
     </div>
     <div id="right-half" class="half">
         <div class="title">Lottie</div>
         <div class="emoji" id="right-emoji"></div>
         <div class="stopwatch" id="right-timer">0:00</div>
+        <p>15m = 🐝🐝, 20m = 🐝</p>
         <button class="undo-button" id="right-undo">Undo</button>
     </div>
 </div>
@@ -269,7 +271,7 @@
         } else {
             const minutes = Math.floor(Math.floor((Date.now() - startTime) / 1000) / 60);
             const bee = emojiImage('🐝')
-            emojiElement.innerHTML = minutes < 20 ? bee + bee : minutes < 30 ? bee : emojiImage('✅');
+            emojiElement.innerHTML = minutes < 15 ? bee + bee : minutes < 25 ? bee : emojiImage('✅');
             index = emojis.length;
         }
         return index;
