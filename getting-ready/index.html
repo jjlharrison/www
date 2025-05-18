@@ -287,7 +287,7 @@
         } else {
             const minutes = Math.floor(Math.floor((Date.now() - startTime) / 1000) / 60);
             const bee = emojiImage('🐝')
-            emojiElement.innerHTML = minutes < 15 ? bee + bee : minutes < 25 ? bee : emojiImage('✅');
+            emojiElement.innerHTML = minutes < 15 ? bee + bee : minutes < 20 ? bee : emojiImage('✅');
             index = emojis.length;
         }
         return index;
