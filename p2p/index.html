@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P2P Chat</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>P2P WebRTC Chat</h1>
+
+        <div class="connection-section">
+            <h2>Connect to Peers</h2>
+            <div class="connection-controls">
+                <button id="createOffer">Create Offer</button>
+                <button id="createAnswer">Create Answer</button>
+            </div>
+
+            <div class="signal-box">
+                <label>Your Signal (copy and send to peer):</label>
+                <textarea id="localSignal" readonly placeholder="Click 'Create Offer' or 'Create Answer'..."></textarea>
+                <button id="copySignal">Copy</button>
+            </div>
+
+            <div class="signal-box">
+                <label>Peer's Signal (paste here):</label>
+                <textarea id="remoteSignal" placeholder="Paste the signal from your peer..."></textarea>
+                <button id="acceptSignal">Accept Signal</button>
+            </div>
+
+            <div id="connectionStatus">Not connected</div>
+        </div>
+
+        <div class="chat-section">
+            <h2>Chat</h2>
+            <div class="message-input">
+                <input type="text" id="messageInput" placeholder="Type a message...">
+                <button id="sendMessage">Send</button>
+            </div>
+            <div id="messages"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Aquila</title>
+  <link rel="manifest" href="manifest.json" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: black; /* black background */
+      font-family: sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <!-- Our custom web component -->
+  <aquila-game></aquila-game>
+
+  <script src="app.js"></script>
+  <script>
+    // Register service worker for offline PWA support
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js')
+        .then(reg => console.log('Service Worker registered', reg.scope))
+        .catch(err => console.error('Service Worker registration failed:', err));
+    }
+  </script>
+</body>
+</html>

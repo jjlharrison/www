@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Markdown PWA Editor</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    body, html { margin: 0; padding: 0; height: 100%; }
+    markdown-editor { display: block; height: 100%; }
+  </style>
+</head>
+<body>
+  <markdown-editor data-placeholder="Start typing Markdown..."></markdown-editor>
+
+  <script type="module">
+    import { marked } from 'https://cdn.jsdelivr.net/npm/marked@15.0.12/lib/marked.umd.min.js';
+
+    class MarkdownEditor extends HTMLElement {
+      constructor() {
+        super();
+        this.attachShadow({ mode: 'open' });
+        this.shadowRoot.innerHTML = `
+          <style>
+            :host { display: block; height: 100%; box-sizing: border-box; }
+            .editor {
+              width: 100%;
+              height: 100%;
+              padding: 16px;
+              box-sizing: border-box;
+              font-family: system-ui, sans-serif;
+              font-size: 1rem;
+              line-height: 1.5;
+              outline: none;
+              overflow-y: auto;
+            }
+            .editor:empty::before {
+              content: attr(data-placeholder);
+              color: #888;
+            }
+          </style>
+          <div class="editor" contenteditable="true" data-placeholder="${this.getAttribute('data-placeholder') || ''}"></div>
+        `;
+        this.editor = this.shadowRoot.querySelector('.editor');
+      }
+
+      connectedCallback() {
+        this.editor.addEventListener('input', () => this.updateContent());
+        this.updateContent();
+      }
+
+      updateContent() {
+        const markdownText = this.editor.innerText;
+        const rendered = marked.parse(markdownText);
+        // Preserve caret at end
+        this.editor.innerHTML = rendered;
+        const range = document.createRange();
+        const sel = window.getSelection();
+        range.selectNodeContents(this.editor);
+        range.collapse(false);
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+    }
+
+    customElements.define('markdown-editor', MarkdownEditor);
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js').catch(console.error);
+    }
+
+    window.addEventListener('beforeinstallprompt', e => e.prompt());
+  </script>
+</body>
+</html>

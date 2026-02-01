@@ -184,7 +184,6 @@
     };
 
     const startButton = document.getElementById('start-button');
-    const splitScreen = document.getElementById('split-screen');
     const leftEmoji = document.getElementById('left-emoji');
     const rightEmoji = document.getElementById('right-emoji');
     const leftTimer = document.getElementById('left-timer');
@@ -261,7 +260,7 @@
     }
 
     function emojiImage(e) {
-        return '<img src="' + emojiImages[e] + '.png" />';
+        return '<img src="images/' + emojiImages[e] + '.png"  alt="' + e + '"/>';
     }
 
     function updateTimers() {
