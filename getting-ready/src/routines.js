@@ -23,5 +23,5 @@ export function getRoutine() {
 }
 
 export function emojiImageUrl(emoji) {
-    return `/images/${emojiImages[emoji]}.png`;
+    return `${import.meta.env.BASE_URL}images/${emojiImages[emoji]}.png`;
 }

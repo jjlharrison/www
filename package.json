@@ -1,0 +1,10 @@
+{
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "getting-ready"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present && node build.js"
+  }
+}
