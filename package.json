@@ -5,6 +5,7 @@
     "getting-ready"
   ],
   "scripts": {
+    "dev": "npm run build --workspaces --if-present && node build.js && npx -y serve dist",
     "build": "npm run build --workspaces --if-present && node build.js"
   }
 }

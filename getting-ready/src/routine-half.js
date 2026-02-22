@@ -7,7 +7,7 @@ export class RoutineHalf extends LitElement {
         emojis: { type: Array },
         labels: { type: Array },
         taskIndex: { type: Number },
-        startTime: { type: Number },
+        finishedInTime: { attribute: false },
         formattedTime: { type: String },
     };
 
@@ -48,12 +48,21 @@ export class RoutineHalf extends LitElement {
             cursor: pointer;
         }
 
+        .label {
+            font-size: 2vw;
+            text-align: center;
+        }
+
         .stopwatch {
             font-size: 3vw;
             flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
+        }
+
+        .stopwatch.overtime {
+            color: red;
         }
 
         .undo-button {
@@ -74,11 +83,8 @@ export class RoutineHalf extends LitElement {
     }
 
     _completionHtml() {
-        const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
-        const minutes = Math.floor(elapsed / 60);
         const bee = html`<img src="${emojiImageUrl('🐝')}" alt="🐝">`;
-        if (minutes < 15) return html`${bee}${bee}`;
-        if (minutes < 20) return bee;
+        if (this.finishedInTime) return bee;
         return this._emojiImg('✅');
     }
 
@@ -94,13 +100,15 @@ export class RoutineHalf extends LitElement {
         const done = this.taskIndex >= this.emojis.length;
         const emoji = done ? null : this.emojis[this.taskIndex];
         const label = done ? 'Done' : this.labels[this.taskIndex];
+        const overtime = this.formattedTime.startsWith('-');
 
         return html`
             <div class="title">${this.name}</div>
-            <div class="emoji" title="${label}" @click=${this._onEmojiClick}>
+            <div class="emoji" @click=${this._onEmojiClick}>
                 ${done ? this._completionHtml() : this._emojiImg(emoji)}
             </div>
-            <div class="stopwatch">${this.formattedTime}</div>
+            <div class="label">${label}</div>
+            <div class="stopwatch ${overtime ? 'overtime' : ''}">${this.formattedTime}</div>
             <button class="undo-button" @click=${this._onUndo}>Undo</button>
         `;
     }
