@@ -180,8 +180,8 @@ export class GettingReadyApp extends LitElement {
         this._paused = state.paused || false;
         this._leftIndex = state.leftIndex;
         this._rightIndex = state.rightIndex;
-        this._leftFinishedInTime = state.leftFinishedInTime ?? null;
-        this._rightFinishedInTime = state.rightFinishedInTime ?? null;
+        this._leftFinishedInTime = state.leftFinishedInTime != null ? state.leftFinishedInTime : null;
+        this._rightFinishedInTime = state.rightFinishedInTime != null ? state.rightFinishedInTime : null;
         this._leftFinishFormatted = state.leftFinishFormatted || null;
         this._rightFinishFormatted = state.rightFinishFormatted || null;
 
@@ -338,11 +338,11 @@ export class GettingReadyApp extends LitElement {
     }
 
     _leftTime() {
-        return this._leftFinishFormatted ?? this._formattedTime;
+        return this._leftFinishFormatted != null ? this._leftFinishFormatted : this._formattedTime;
     }
 
     _rightTime() {
-        return this._rightFinishFormatted ?? this._formattedTime;
+        return this._rightFinishFormatted != null ? this._rightFinishFormatted : this._formattedTime;
     }
 
     render() {
