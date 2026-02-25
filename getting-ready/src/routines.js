@@ -20,7 +20,7 @@ export function getRoutine() {
         const emojis = ['🚽', '👕', '🧺', '🛏️', '🪥', '🧹'];
         const labels = ['Toilet', 'Get Dressed', 'Dirty Clothes in Basket', 'Make Bed', 'Brush Teeth', 'Tidy Bedroom'];
         return [
-            { leftEmojis: emojis, leftLabels: labels, rightEmojis: emojis, rightLabels: labels, timeLimit: 20 * 60 },
+            { leftEmojis: emojis, leftLabels: labels, rightEmojis: emojis, rightLabels: labels, timeLimit: 25 * 60 },
         ];
     }
     const thursday = new Date().getDay() === 4;
