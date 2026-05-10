@@ -256,6 +256,27 @@ export class RoutineSide extends LitElement {
             opacity: 0.6;
         }
 
+        .bee-history-entry.added .bee-history-sign {
+            color: #1565c0;
+        }
+
+        .bee-history-entry.removed .bee-history-sign {
+            color: #ef6c00;
+        }
+
+        .bee-history-entry.removed img {
+            opacity: 0.6;
+        }
+
+        .bee-history-tag {
+            font-size: 0.75em;
+            color: #888;
+            background: #f0f0f0;
+            border-radius: 999px;
+            padding: 1px 6px;
+            margin-left: 4px;
+        }
+
         .bee-admin {
             display: flex;
             gap: 12px;
@@ -371,7 +392,10 @@ export class RoutineSide extends LitElement {
             if (Array.isArray(parsed)) {
                 this._beeHistory = parsed.map(e => {
                     if (!e) return null;
-                    if ((e.type === 'earned' || e.type === 'spent') && Number.isFinite(e.at)) {
+                    if (
+                        (e.type === 'earned' || e.type === 'spent' || e.type === 'added' || e.type === 'removed')
+                        && Number.isFinite(e.at)
+                    ) {
                         return e;
                     }
                     if (Number.isFinite(e.earnedAt)) {
@@ -529,12 +553,16 @@ export class RoutineSide extends LitElement {
     _adminAdd() {
         this._beeCount++;
         this._saveBeeCount();
+        this._beeHistory = [...this._beeHistory, { type: 'added', at: Date.now() }];
+        this._saveBeeHistory();
     }
 
     _adminSubtract() {
         if (this._beeCount > 0) {
             this._beeCount--;
             this._saveBeeCount();
+            this._beeHistory = [...this._beeHistory, { type: 'removed', at: Date.now() }];
+            this._saveBeeHistory();
         }
     }
 
@@ -850,13 +878,18 @@ export class RoutineSide extends LitElement {
                             : days.map(group => html`
                                 <div class="bee-history-day">
                                     <div class="bee-history-day-label">${group.label}</div>
-                                    ${group.entries.map(entry => html`
-                                        <div class="bee-history-entry ${entry.type}">
-                                            <span class="bee-history-sign">${entry.type === 'earned' ? '+' : '−'}</span>
-                                            <img src="${emojiImageUrl('🐝')}" alt="🐝">
-                                            <span>${this._formatTime(entry.at)}</span>
-                                        </div>
-                                    `)}
+                                    ${group.entries.map(entry => {
+                                        const positive = entry.type === 'earned' || entry.type === 'added';
+                                        const manual = entry.type === 'added' || entry.type === 'removed';
+                                        return html`
+                                            <div class="bee-history-entry ${entry.type}">
+                                                <span class="bee-history-sign">${positive ? '+' : '−'}</span>
+                                                <img src="${emojiImageUrl('🐝')}" alt="🐝">
+                                                <span>${this._formatTime(entry.at)}</span>
+                                                ${manual ? html`<span class="bee-history-tag">manual</span>` : ''}
+                                            </div>
+                                        `;
+                                    })}
                                 </div>
                             `)}
                     </div>
