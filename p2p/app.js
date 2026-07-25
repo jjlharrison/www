@@ -14,6 +14,29 @@ const remoteSignalEl = document.getElementById('remoteSignal');
 const connectionStatusEl = document.getElementById('connectionStatus');
 const messagesEl = document.getElementById('messages');
 const messageInputEl = document.getElementById('messageInput');
+const offerQrSectionEl = document.getElementById('offerQrSection');
+const offerQrCodeEl = document.getElementById('offerQrCode');
+
+function clearOfferQrCode() {
+    offerQrCodeEl.replaceChildren();
+    offerQrSectionEl.hidden = true;
+}
+
+function renderOfferQrCode(signal) {
+    clearOfferQrCode();
+
+    try {
+        new QRCode(offerQrCodeEl, {
+            text: signal,
+            width: 256,
+            height: 256,
+            correctLevel: QRCode.CorrectLevel.L
+        });
+        offerQrSectionEl.hidden = false;
+    } catch (error) {
+        console.error('Unable to generate offer QR code:', error);
+    }
+}
 
 function updateConnectionStatus() {
     const connectedCount = Array.from(peers.values()).filter(p =>
@@ -51,7 +74,12 @@ function createPeerConnection() {
                 candidates: peerData.iceCandidates,
                 peerId: peerId
             };
-            localSignalEl.value = btoa(JSON.stringify(signal));
+            const encodedSignal = btoa(JSON.stringify(signal));
+            localSignalEl.value = encodedSignal;
+
+            if (signal.type === 'offer') {
+                renderOfferQrCode(encodedSignal);
+            }
         }
     };
 
@@ -116,6 +144,7 @@ function appendMessage(text, type, peerId = 'You') {
 // Create offer (initiator)
 document.getElementById('createOffer').addEventListener('click', async () => {
     isOfferer = true;
+    clearOfferQrCode();
     const peerData = createPeerConnection();
     pendingConnection = peerData;
 

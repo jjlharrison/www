@@ -61,6 +61,32 @@ h2 {
     resize: vertical;
 }
 
+.offer-qr {
+    margin: 0 0 15px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #fafafa;
+    text-align: center;
+}
+
+.offer-qr p {
+    margin: 0 0 10px;
+    color: #555;
+    font-weight: 500;
+}
+
+#offerQrCode {
+    display: inline-block;
+    padding: 8px;
+    background: white;
+}
+
+#offerQrCode img,
+#offerQrCode canvas {
+    display: block;
+}
+
 button {
     background: #007bff;
     color: white;

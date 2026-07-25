@@ -1,4 +1,4 @@
-import { cpSync, existsSync, readdirSync, statSync } from 'fs';
+import { cpSync, existsSync, mkdirSync, readdirSync, statSync } from 'fs';
 import { join } from 'path';
 
 const root = import.meta.dirname;
@@ -30,5 +30,13 @@ for (const entry of readdirSync(root)) {
         }
     }
 }
+
+// Keep the P2P QR generator local in the assembled static site.
+const qrCodeBundleDir = join(dist, 'node_modules', 'qrcodejs');
+mkdirSync(qrCodeBundleDir, { recursive: true });
+cpSync(
+    join(root, 'node_modules', 'qrcodejs', 'qrcode.min.js'),
+    join(qrCodeBundleDir, 'qrcode.min.js')
+);
 
 console.log('Assembled dist/');

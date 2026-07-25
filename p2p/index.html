@@ -23,6 +23,11 @@
                 <button id="copySignal">Copy</button>
             </div>
 
+            <div id="offerQrSection" class="offer-qr" hidden aria-live="polite">
+                <p>Scan this QR code to share your offer:</p>
+                <div id="offerQrCode"></div>
+            </div>
+
             <div class="signal-box">
                 <label>Peer's Signal (paste here):</label>
                 <textarea id="remoteSignal" placeholder="Paste the signal from your peer..."></textarea>
@@ -42,6 +47,7 @@
         </div>
     </div>
 
+    <script src="../node_modules/qrcodejs/qrcode.min.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
