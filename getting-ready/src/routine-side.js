@@ -666,9 +666,7 @@ export class RoutineSide extends LitElement {
         if (now.getHours() < 12 && now.getDay() !== 0 && now.getDay() !== 6) {
             const hour = now.getHours();
             const minute = now.getMinutes();
-            if (hour < 7 || (hour === 7 && minute < 15)) {
-                now.setHours(6, 45, 0, 0);
-            } else if (hour === 7 && minute < 30) {
+            if (hour < 7 || (hour === 7 && minute < 20)) {
                 now.setHours(7, 0, 0, 0);
             }
         }
